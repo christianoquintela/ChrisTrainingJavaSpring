@@ -1,11 +1,15 @@
 package com.example.training.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -23,7 +27,7 @@ public class User {
     @Size(groups = CreateUser.class, min = 2, max = 100)
     private String username;
 
-    //@JsonProperties garante que a senha seja só de escrita, e não poderá ser lida, não será enviado json com a senha para o front.
+    //@JsonProperty garante que a senha seja só de escrita, e não poderá ser lida, não será enviado json com a senha para o front.
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password", nullable = false, length = 60)
     @NotNull(groups = {CreateUser.class, UpdateUser.class})
@@ -31,16 +35,27 @@ public class User {
     @Size(groups = {CreateUser.class, UpdateUser.class}, min = 8, max = 60)
     private String password;
 
-    public User(Long id, String username, String password) {
+    //    Para facilitar o entendimento, lê-se one(um) to(para) Many(muitos) -> um User pode ter task(várias tarefas).
+    @OneToMany(mappedBy = "user")
+    private List<Task> tasks = new ArrayList<>();
+
+    public User(Long id, String username, String password, List<Task> tasks) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.tasks = tasks;
     }
 
     public User() {
     }
 
-//private List<Task> tasks = new ArrayList<>();
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
 
     @Override
     public String toString() {
