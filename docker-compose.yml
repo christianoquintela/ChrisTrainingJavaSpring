@@ -1,0 +1,17 @@
+services:
+  mysqldb:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=mysql_db
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - mysqlvolume:/var/lib/mysq
+volumes:
+  mysqlvolume:
