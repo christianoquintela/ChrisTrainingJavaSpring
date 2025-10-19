@@ -16,11 +16,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final TaskRepository taskRepository;
-
-    public UserService(UserRepository userRepository, TaskRepository taskRepository) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.taskRepository = taskRepository;
     }
 
     /*
@@ -29,6 +26,7 @@ public class UserService {
      *
      * @return Uma lista de IDs de usuários. Se nenhum usuário for encontrado,
      * retorna uma lista vazia.
+     * Gerado por IA
      */
     public List<Long> findAllUserIds() {
         // 1. Busca todos os usuários do banco de dados através do repositório
@@ -62,7 +60,6 @@ public class UserService {
     public User create(User obj) {
         obj.setId(null);
         obj = this.userRepository.save(obj);
-        this.taskRepository.saveAll(obj.getTasks());
         return obj;
     }
 
