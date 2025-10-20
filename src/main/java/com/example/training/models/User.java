@@ -1,5 +1,7 @@
 package com.example.training.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
@@ -49,6 +51,8 @@ public class User {
     public User() {
     }
 
+    //Aqui o JsonIgnora está sendo usado para ignorar todas as tasks, e pegar só o usuário.(não entendi, vamos ver na prática)
+    @JsonIgnore
     public List<Task> getTasks() {
         return tasks;
     }

@@ -41,14 +41,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public List<?> findAllTasks() {
-        List<User> users = this.userRepository.findAll();
-        if (users.isEmpty()) return Collections.emptyList();
-        return users.stream()
-                .map(User::getTasks)
-                .collect(Collectors.toList());
-    }
-
     public User findById(Long id) {
         Optional<User> userOptional = this.userRepository.findById(id);
         return userOptional.orElseThrow(() -> new RuntimeException("Id não encontrado" + id + ", Tipo: " + User.class.getName()));
