@@ -2,6 +2,7 @@ package com.example.training.controllers;
 
 import com.example.training.models.Task;
 import com.example.training.services.TaskService;
+import com.example.training.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,9 +19,12 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final UserService userService;
 
-    public TaskController(TaskService taskService) {
+
+    public TaskController(TaskService taskService, UserService userService) {
         this.taskService = taskService;
+        this.userService = userService;
     }
 
     @GetMapping("/{id}")
@@ -39,6 +43,7 @@ public class TaskController {
 //    Busca tudo pelo id do usuário
     @GetMapping("/all/{id}")
     public ResponseEntity<List<Task>> findAlll(@PathVariable Long id) {
+        this.userService.findById(id);
         final var allByUserId = taskService.findAllByUserId(id);
         return ResponseEntity.ok().body(allByUserId);
     }
