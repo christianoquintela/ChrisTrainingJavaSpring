@@ -1,8 +1,9 @@
 package com.example.training.services;
 
 import com.example.training.models.User;
-import com.example.training.repositories.TaskRepository;
 import com.example.training.repositories.UserRepository;
+import com.example.training.services.exceptions.DataBindingViolationException;
+import com.example.training.services.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class UserService {
 
     public User findById(Long id) {
         Optional<User> userOptional = this.userRepository.findById(id);
-        return userOptional.orElseThrow(() -> new RuntimeException("Id não encontrado" + id + ", Tipo: " + User.class.getName()));
+        return userOptional.orElseThrow(() -> new ObjectNotFoundException("Id não encontrado: " + id + ", Tipo: " + User.class.getName()));
     }
 
     //Tem melhor controle do que está acontecendo com a aplicação, ou faz tudo ou n faz nada.
@@ -68,7 +69,7 @@ public class UserService {
         try {
             this.userRepository.deleteById(id);
         } catch (Exception e) {
-            throw new RuntimeException("Não é possível excluir pois há entidades relacionadas" + e.getMessage());
+            throw new DataBindingViolationException("Não é possível excluir pois há entidades relacionadas" + e.getMessage());
         }
     }
 }

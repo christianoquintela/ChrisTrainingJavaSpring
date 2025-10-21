@@ -4,6 +4,8 @@ import com.example.training.models.Task;
 import com.example.training.models.User;
 import com.example.training.repositories.TaskRepository;
 import com.example.training.repositories.UserRepository;
+import com.example.training.services.exceptions.DataBindingViolationException;
+import com.example.training.services.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,7 @@ public class TaskService {
 
     public Task findById(Long id) {
         Optional<Task> taskOptional = this.taskRepository.findById(id);
-        return taskOptional.orElseThrow(() -> new RuntimeException("Tarefa não encontrada! id: " + id + ", Tipo: " + Task.class.getName()));
+        return taskOptional.orElseThrow(() -> new ObjectNotFoundException("Tarefa não encontrada! id: " + id + ", Tipo: " + Task.class.getName()));
     }
 
     public List<?> findAllTasks() {
@@ -63,7 +65,7 @@ public class TaskService {
         try{
             this.taskRepository.deleteById(id);
         } catch (Exception e) {
-            throw new RuntimeException("Não é possível deletar pois há entidades relacionadas. "+e.getMessage());
+            throw new DataBindingViolationException("Não é possível deletar pois há entidades relacionadas. "+e.getMessage());
         }
     }
 }
