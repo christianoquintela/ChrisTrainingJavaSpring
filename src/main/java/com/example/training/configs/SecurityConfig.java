@@ -22,11 +22,12 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_MATCHERS = {
-            "/"
+            "/" //todas as chamdas para esta rota/end point devem apresentar erro 404 not found - pois não há nada mapeado.
     };
 
     private static final String[] PUBLIC_MATCHERS_POST = {
-            "/user",
+//            "/user/save", // rota especifica
+            "/user/**", // libera todas do tipo post depois de user
             "/login"
     };
 
