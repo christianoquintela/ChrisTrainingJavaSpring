@@ -1,13 +1,18 @@
 package com.example.training.configs;
 
+import com.example.training.security.JWTUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -22,7 +27,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_MATCHERS = {
-            "/" //todas as chamdas para esta rota/end point devem apresentar erro 404 not found - pois não há nada mapeado.
+            "/" //todas as chamadas para esta rota/end point devem apresentar erro 404 not found - pois não há nada mapeado.
     };
 
     private static final String[] PUBLIC_MATCHERS_POST = {
@@ -30,10 +35,22 @@ public class SecurityConfig {
             "/user/**", // libera todas do tipo post depois de user
             "/login"
     };
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JWTUtil jwtUtil;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        AuthenticationManagerBuilder authenticationManagerBuilder = http
+                .getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(this.userDetailsService)
+                .passwordEncoder(bCryptPasswordEncoder());
+        this.authenticationManager = authenticationManagerBuilder.build();
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS
                 ))
@@ -55,8 +72,9 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
+
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
