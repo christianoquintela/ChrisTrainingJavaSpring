@@ -1,11 +1,12 @@
 package com.example.training.services;
 
 import com.example.training.models.User;
-import com.example.training.models.enums.ProfileENUM;
+import com.example.training.models.enums.ProfileEnum;
 import com.example.training.repositories.UserRepository;
 import com.example.training.services.exceptions.DataBindingViolationException;
 import com.example.training.services.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,12 @@ import java.util.stream.Stream;
 @Service
 public class UserService {
 
-
-    private final UserRepository userRepository;
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
+    @Autowired
+    private UserRepository userRepository;
+
 
     /*
      * Busca todos os usuários, valida se a lista não está vazia e retorna
@@ -59,7 +58,7 @@ public class UserService {
     public User create(User obj) {
         obj.setId(null);
         obj.setPassword(this.bCryptPasswordEncoder.encode(obj.getPassword()));
-        obj.setProfiles(Stream.of(ProfileENUM.USER.getCode()).collect(Collectors.toSet()));
+        obj.setProfiles(Stream.of(ProfileEnum.USER.getCode()).collect(Collectors.toSet()));
         obj = this.userRepository.save(obj);
         return obj;
     }

@@ -1,16 +1,14 @@
 package com.example.training.models;
 
-import com.example.training.models.enums.ProfileENUM;
+import com.example.training.models.enums.ProfileEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +19,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 @Setter
-
 public class User {
     public static final String TABLE_NAME = "user";
     @Id
@@ -45,6 +42,7 @@ public class User {
 
     //    Para facilitar o entendimento, lê-se one(um) to(para) Many(muitos) -> um User pode ter task(várias tarefas).
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
     private List<Task> tasks = new ArrayList<>();
     @ElementCollection(fetch = FetchType.EAGER)//Sempre que busca o usuário no DB busca tbm seus perfis
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -68,29 +66,33 @@ public class User {
                 '}';
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || getClass() != obj.getClass()) return false;
-        User user = (User) obj;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password);
+    public Set<ProfileEnum> getProfiles() {
+        return this.profiles.stream().map(ProfileEnum::toEnum).collect(Collectors.toSet());
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, username, password);
-    }
-
-    public Set<ProfileENUM> getProfiles() {
-        return this.profiles.stream().map(enums -> ProfileENUM.toEnum(enums)).collect(Collectors.toSet());
-    }
-
-    public void addProfile(ProfileENUM profileENUM) {
-        this.profiles.add(profileENUM.getCode());
+    public void addProfile(ProfileEnum profileEnum) {
+        this.profiles.add(profileEnum.getCode());
     }
 
     public interface CreateUser {
     }
 
     public interface UpdateUser {
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        User user = (User) o;
+        return getId() != null && Objects.equals(getId(), user.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

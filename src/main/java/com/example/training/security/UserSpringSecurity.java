@@ -1,6 +1,6 @@
 package com.example.training.security;
 
-import com.example.training.models.enums.ProfileENUM;
+import com.example.training.models.enums.ProfileEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class UserSpringSecurity implements UserDetails {
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserSpringSecurity(Long id, String username, String password, Set<ProfileENUM> profileENUMS) {
+    public UserSpringSecurity(Long id, String username, String password, Set<ProfileEnum> profileENUMS) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -49,7 +49,7 @@ public class UserSpringSecurity implements UserDetails {
         return true;
     }
 
-    public boolean hasRole(ProfileENUM profileENUM){
+    public boolean hasRole(ProfileEnum profileENUM){
         return getAuthorities().contains(new SimpleGrantedAuthority(profileENUM.getDescription()));
     }
 }
