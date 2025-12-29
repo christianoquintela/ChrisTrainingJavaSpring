@@ -1,6 +1,7 @@
 package com.example.training.configs;
 
 import com.example.training.security.JWTAuthenticationFilter;
+import com.example.training.security.JWTAuthorizationFilter;
 import com.example.training.security.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +34,7 @@ public class SecurityConfig {
     };
 
     private static final String[] PUBLIC_MATCHERS_POST = {
-    //      "/user/all", // rota especifica
+            //      "/user/all", // rota especifica
             "/user/**", // libera todas do tipo post depois de user
             "/login"
     };
@@ -70,8 +71,8 @@ public class SecurityConfig {
                 .authenticationManager(this.authenticationManager);
 
         http.addFilter(new JWTAuthenticationFilter(this.authenticationManager, this.jwtUtil));
-//        http.addFilter(new JWTAuthorizationFilter(this.authenticationManager, this.jwtUtil,
-//                this.userDetailsService));
+        http.addFilter(new JWTAuthorizationFilter(this.authenticationManager, this.jwtUtil,
+                this.userDetailsService));
 
 
         return http.build();
