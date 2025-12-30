@@ -3,15 +3,19 @@ package com.example.training.services;
 import com.example.training.models.User;
 import com.example.training.models.enums.ProfileEnum;
 import com.example.training.repositories.UserRepository;
+import com.example.training.security.UserSpringSecurity;
+import com.example.training.services.exceptions.AuthorizationException;
 import com.example.training.services.exceptions.DataBindingViolationException;
 import com.example.training.services.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,6 +29,13 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    public static UserSpringSecurity authenticated() {
+        try {
+            return (UserSpringSecurity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     /*
      * Busca todos os usuários, valida se a lista não está vazia e retorna
@@ -48,6 +59,11 @@ public class UserService {
     }
 
     public User findById(Long id) {
+
+        UserSpringSecurity userSpringSecurity = authenticated();
+        if(!Objects.nonNull(userSpringSecurity) || !userSpringSecurity.hasRole(ProfileEnum.ADMIN) && !id.equals(userSpringSecurity.getId()))
+            throw new AuthorizationException("Acesso negado.");
+
         Optional<User> userOptional = this.userRepository.findById(id);
         return userOptional.orElseThrow(() -> new ObjectNotFoundException("Id não encontrado: " + id + ", Tipo: " + User.class.getName()));
     }
