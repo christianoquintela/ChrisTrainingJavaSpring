@@ -41,10 +41,10 @@ public class TaskController {
     }
 
 //    Busca tudo pelo id do usuário
-    @GetMapping("/all/{id}")
-    public ResponseEntity<List<Task>> findAlll(@PathVariable Long id) {
-        this.userService.findById(id);
-        final var allByUserId = taskService.findAllByUserId(id);
+    @GetMapping("/user")
+    public ResponseEntity<List<Task>> findAllByUser() {
+
+        final var allByUserId = taskService.findAllByUser();
         return ResponseEntity.ok().body(allByUserId);
     }
 
